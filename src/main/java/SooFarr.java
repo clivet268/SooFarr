@@ -14,6 +14,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.*;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -39,7 +40,7 @@ public class SooFarr {
     }
 
 
-    public static void instagramInit() throws IOException, AWTException {
+    public static void instagramInit() throws IOException, AWTException, InterruptedException {
         List<String> ts = Files.readAllLines(cffp.toPath());
         String pass = ts.get(0);
         System.setProperty("webdriver.gecko.driver", "C:\\Users\\clive\\Downloads\\geckodriver-v0.32.0-win32\\geckodriver.exe");
@@ -234,6 +235,10 @@ public class SooFarr {
                     r.delay(100);
                     r.keyRelease(KeyEvent.VK_ENTER);
 
+
+                    //TODO no sleep :(
+                    Thread.sleep(10000);
+
                     //clear the chats
                     //click the info button
                     for (WebElement webElement2 : imgs) {
@@ -268,9 +273,16 @@ public class SooFarr {
 
                     }
 
+                    //click the pop up delete button
+                    WebElement delbutt = driver.findElement(By.className("_a9-_"));
+                    delbutt.click();
+
+                    /*
                     //go back to dm requests home
                     driver.get("https://www.instagram.com/direct/inbox/");
                     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+                     */
                 }
             }
         }
@@ -360,7 +372,11 @@ public class SooFarr {
         System.out.println("this is fard");
         System.out.println(fard.toString());
         String newpath = fard.toString() + File.separator + p.getName();
-        Files.move(p.toPath(), Path.of(newpath));
+        try {
+            Files.move(p.toPath(), Path.of(newpath));
+        } catch (FileAlreadyExistsException ignored){
+            Files.move(p.toPath(), Path.of(newpath + Math.random() + Math.random() + Math.random() + Math.random()));
+        }
         int laoide =getLatestOpenID();
         catalog.put(laoide, newpath);
         String lineta = laoide+ "," + p.getName() + "," + newpath + "," + Arrays.hashCode(bytesofp) + "," + dtf.format(now)
@@ -402,7 +418,7 @@ public class SooFarr {
 
     }
 
-    public static void main(String[] args) throws IOException, AWTException {
+    public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         onLoad();
         instagramInit();
 
